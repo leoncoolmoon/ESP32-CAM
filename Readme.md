@@ -1,5 +1,5 @@
 # Calculate Optical Flow with an ESP32-CAM
-### aim
+### AIM:
 bluetooth mouse use eyes or other parts of body to operate
 
 ### TODO:  
