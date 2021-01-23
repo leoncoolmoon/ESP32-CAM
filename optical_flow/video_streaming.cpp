@@ -9,8 +9,8 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
-const char* ssid = "PUT_YOUR_WIFI_SSID_HERE";
-const char* password = "PUT_YOUR_WIFI_PASSWORD_HERE";
+const char* ssid = "ddkk";
+const char* password = "0425271998";
 
 #define PART_BOUNDARY "123456789000000000000987654321"
 static const char* _STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
