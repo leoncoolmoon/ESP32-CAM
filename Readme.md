@@ -6,14 +6,7 @@ bluetooth mouse use eyes or other parts of body to operate
 - adjust focal length  
 
 <br>
-To pull the mavlink libraries:
 
-```
-git submodule init
-git submodule update
-```
-
-<br><br>
 
 ## Resources and documentations:
 
