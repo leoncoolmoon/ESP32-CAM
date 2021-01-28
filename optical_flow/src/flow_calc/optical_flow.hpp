@@ -83,6 +83,6 @@ public:
 	inline int getFocalLengthy() { return focal_length_y; };
 	inline int getOutputRate() { return output_rate; };
 
-	virtual int calcFlow(uint8_t *img_current, const uint32_t &img_time_us, int &dt_us, float &flow_x, float &flow_y) = 0;
+	virtual int calcFlow(uint8_t *img_current, const uint32_t &img_time_us, int &dt_us, float &flow_x, float &flow_y, int left, int top,int right, int buttom,int o_width, int o_height) = 0;
 
 };

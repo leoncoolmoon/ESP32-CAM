@@ -42,8 +42,8 @@
 
 #include "optical_flow.hpp"
 #include "px4flow.hpp"
-//#include <memory.h>
 #include <cstring>
+#include "blkcp.hpp"
 
 #define DEFAULT_SEARCH_SIZE 6
 #define DEFAULT_FLOW_FEATURE_THRESHOLD 30
@@ -67,6 +67,6 @@ public:
 	~OpticalFlowPX4();
 
 	int calcFlow(uint8_t *img_current, const uint32_t &img_time_us, int &dt_us,
-		     float &flow_x, float &flow_y);
+		     float &flow_x, float &flow_y, int left, int top,int right, int buttom,int o_width, int o_height);
 
 };

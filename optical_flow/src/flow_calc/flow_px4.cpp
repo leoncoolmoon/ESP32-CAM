@@ -43,7 +43,8 @@
 
 #include "flow_px4.hpp"
 #include <iostream>
-
+#define step 1
+//int step = sizeof(uint8_t);
 OpticalFlowPX4::OpticalFlowPX4(float f_length_x, float f_length_y, int ouput_rate, int img_width, int img_height,
 			       int search_size, int flow_feature_threshold, int flow_value_threshold)
 {
@@ -68,12 +69,21 @@ OpticalFlowPX4::~OpticalFlowPX4(void)
 }
 
 int OpticalFlowPX4::calcFlow(uint8_t *img_current, const uint32_t &img_time_us, int &dt_us, float &flow_x,
-			     float &flow_y)
+			     float &flow_y, int left, int top,int right, int buttom,int o_width, int o_height)
 {
-
+	
+ /*
+  left = 0;//can be changed, the test block left
+  top = 0; //can be changed, the test block top
+  right = fb->width;//can be changed, the test block right
+  buttom  = fb->height;//can be changed, the test block buttom
+  o_width = fb->width; //the original buffer width
+  o_height = fb->height;//the original buffer height
+  */
 	if (!initialized) {
 		//first call of the function -> copy image for flow calculation
-		memcpy(img_old, img_current, image_width * image_height * sizeof(uint8_t));
+		
+		block_memcpy(img_old, img_current, image_width * image_height * step, left, top,right, buttom,o_width, o_height,step);
 		initialized = true;
 		return 0;
 	}
@@ -86,7 +96,7 @@ int OpticalFlowPX4::calcFlow(uint8_t *img_current, const uint32_t &img_time_us, 
 	int flow_quality = px4_flow->compute_flow(img_old, img_current,
 			   x_gyro_rate, y_gyro_rate, z_gyro_rate, &flow_x, &flow_y);
 
-	memcpy(img_old, img_current, image_width * image_height * sizeof(uint8_t));
+	block_memcpy(img_old, img_current, image_width * image_height * step, left, top,right, buttom,o_width, o_height,step);
 
 	flow_quality = limitRate(flow_quality, img_time_us, &dt_us, &flow_x, &flow_y);
 

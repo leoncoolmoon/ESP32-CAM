@@ -11,6 +11,7 @@
 
 const char* ssid = "ddkk";
 const char* password = "0425271998";
+#define image_Width 128
 
 #define PART_BOUNDARY "123456789000000000000987654321"
 static const char* _STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
@@ -23,7 +24,7 @@ esp_err_t jpg_stream_httpd_handler(httpd_req_t *req) {
   esp_err_t res = ESP_OK;
   size_t _jpg_buf_len = 0;
   uint8_t * _jpg_buf = NULL;
-  char * part_buf[64];
+  char * part_buf[image_Width];
 
   res = httpd_resp_set_type(req, _STREAM_CONTENT_TYPE);
   if (res != ESP_OK) {
@@ -51,7 +52,7 @@ esp_err_t jpg_stream_httpd_handler(httpd_req_t *req) {
     esp_camera_fb_return(fb);
 
     if (res == ESP_OK) {
-      size_t hlen = snprintf((char *)part_buf, 64, _STREAM_PART, _jpg_buf_len);
+      size_t hlen = snprintf((char *)part_buf, image_Width, _STREAM_PART, _jpg_buf_len);
 
       res = httpd_resp_send_chunk(req, (const char *)part_buf, hlen);
     }
