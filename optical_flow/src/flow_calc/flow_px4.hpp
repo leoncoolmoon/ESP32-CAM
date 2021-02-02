@@ -57,6 +57,7 @@ private:
 	PX4Flow *px4_flow;
 	bool initialized;
 	uint8_t *img_old;
+	uint8_t *img_test;
 
 public:
 

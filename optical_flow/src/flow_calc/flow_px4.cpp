@@ -43,8 +43,9 @@
 
 #include "flow_px4.hpp"
 #include <iostream>
-#define step 1
-//int step = sizeof(uint8_t);
+#define o_step 1
+//int o_step = sizeof(uint8_t);
+int test_size = 0;
 OpticalFlowPX4::OpticalFlowPX4(float f_length_x, float f_length_y, int ouput_rate, int img_width, int img_height,
 			       int search_size, int flow_feature_threshold, int flow_value_threshold)
 {
@@ -59,13 +60,16 @@ OpticalFlowPX4::OpticalFlowPX4(float f_length_x, float f_length_y, int ouput_rat
 	//init the PX4Flow instance
 	px4_flow = new PX4Flow(img_width, search_size, flow_feature_threshold, flow_value_threshold);
 	initialized = false;
-	img_old = new uint8_t[image_width * image_height];
+	test_size = image_width * image_height;
+	img_old = new uint8_t[test_size];
+	img_test = new uint8_t[test_size];
 }
 
 OpticalFlowPX4::~OpticalFlowPX4(void)
 {
   delete px4_flow;
   delete img_old;
+  delete img_test;
 }
 
 int OpticalFlowPX4::calcFlow(uint8_t *img_current, const uint32_t &img_time_us, int &dt_us, float &flow_x,
@@ -83,7 +87,7 @@ int OpticalFlowPX4::calcFlow(uint8_t *img_current, const uint32_t &img_time_us, 
 	if (!initialized) {
 		//first call of the function -> copy image for flow calculation
 		
-		block_memcpy(img_old, img_current, image_width * image_height * step, left, top,right, buttom,o_width, o_height,step);
+		block_memcpy(img_old, img_current, left, top,right, buttom,o_width, o_height,o_step);
 		initialized = true;
 		return 0;
 	}
@@ -92,11 +96,16 @@ int OpticalFlowPX4::calcFlow(uint8_t *img_current, const uint32_t &img_time_us, 
 	float x_gyro_rate = 0;
 	float y_gyro_rate = 0;
 	float z_gyro_rate = 0;
-
-	int flow_quality = px4_flow->compute_flow(img_old, img_current,
+	//img_current is the full image, img_test is the test block
+	// Serial.print("test length:");
+	// Serial.println(test_size*o_step);
+	// Serial.print("total length:");
+	// Serial.println(o_width*o_height*o_step);
+	block_memcpy(img_test, img_current, left, top,right, buttom,o_width, o_height,o_step);
+	int flow_quality = px4_flow->compute_flow(img_old, img_test,
 			   x_gyro_rate, y_gyro_rate, z_gyro_rate, &flow_x, &flow_y);
 
-	block_memcpy(img_old, img_current, image_width * image_height * step, left, top,right, buttom,o_width, o_height,step);
+	memcpy(img_old, img_test, test_size*o_step);
 
 	flow_quality = limitRate(flow_quality, img_time_us, &dt_us, &flow_x, &flow_y);
 

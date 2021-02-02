@@ -5,6 +5,7 @@
 
 OpticalFlowPX4 * opticalFlowPX4;
 #define FOCAL_LENGTH 200
+//angle 62, EFL 4.3mm, pixel size 2.2um res 1600x1200
 //const float focal_length_px = (global_data.param[PARAM_FOCAL_LENGTH_MM]) / (4.0f * 6.0f) * 1000.0f; //original focal lenght: 12mm pixelsize: 6um, binning 4 enabled
 //float focal_length = 250;
 #define OUTPUT_RATE 1000 // the maximum times a flow reported per second

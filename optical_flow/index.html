@@ -1,0 +1,131 @@
+ <html>
+    <script type="text/javascript">
+    var canvas, ctx, flag = false, w,h,
+        prevX = 0,
+        currX = 0,
+        prevY = 0,
+        currY = 0;
+    var img;    
+    var maxX, maxY, minX, minY;
+    var x = "black",
+        y = 2;
+	var baseHost = window.location.host;
+	//var query='/config';
+	var query='config?';
+    function resetLimit(){
+		minX = w;
+		minY = h;
+		maxX = 0;
+		maxY = 0;
+	}
+    function init() {
+        canvas = document.getElementById('can');
+        canvas.style.position=" absolute";
+		canvas.width=img.width;
+		canvas.height=img.height;
+		canvas.top=img.top;
+		canvas.left=img.left;
+		var clr = document.getElementById("clr");
+		clr.style.position=" absolute";
+		clr.style.top = (img.y + img.height + 5)+"px";
+		clr.style.left = img.x+"px";
+		ctx = canvas.getContext("2d");
+        w = canvas.width;
+        h = canvas.height;
+		resetLimit()
+        canvas.addEventListener("mousemove", function (e) {
+            findxy('move', e)
+        }, false);
+        canvas.addEventListener("mousedown", function (e) {
+            findxy('down', e)
+        }, false);
+        canvas.addEventListener("mouseup", function (e) {
+            findxy('up', e)
+        }, false);
+        canvas.addEventListener("mouseout", function (e) {
+            findxy('out', e)
+        }, false);
+    }
+    
+    
+    function draw() {
+        ctx.beginPath();
+        ctx.moveTo(prevX, prevY);
+        ctx.lineTo(currX, currY);
+        ctx.strokeStyle = x;
+        ctx.lineWidth = y;
+        ctx.stroke();
+        ctx.closePath();
+    }
+      function clearAll() {
+	  eraseImg();
+	  resetLimit();
+	  updateConfig(query+"&clear");
+	  }
+    function eraseImg() {
+            ctx.clearRect(0, 0, w, h);	
+    }
+    function drawRect(){
+	eraseImg();
+	ctx.beginPath();
+	ctx.rect(minX, minY, maxX-minX, maxY-minY);
+	ctx.stroke();
+	updateConfig(query+"&test"+minY+"~"+minX+"~"+maxY+"~"+maxX);
+	resetLimit();
+	}
+	
+	function updateConfig(conf){
+
+	fetch(conf)
+      .then(response => {
+        console.log(`request to ${conf} finished, status: ${response.status}`)
+      })
+	}
+	function updateLimit(){
+	//console.log(currX,currY, maxX, maxY, minX, minY);
+		if (currX > maxX){maxX = currX};
+		if (currY > maxY){maxY = currY};
+		if (currX < minX){minX = currX};
+		if (currY < minY){minY = currY};
+	};
+    function pageOnLoad(){
+	img = document.getElementById("img");
+	img.style.position=" absolute";
+	img.src="http://"+baseHost+':81/stream?&max';
+	}
+    function findxy(res, e) {
+        if (res == 'down') {
+            prevX = currX;
+            prevY = currY;
+            currX = e.clientX - canvas.offsetLeft;
+            currY = e.clientY - canvas.offsetTop;
+			updateLimit(currX,currY);
+            flag = true;
+            
+        }
+        if (res == 'up' || res == "out") {
+			if(flag){
+			drawRect();}
+            flag = false; 	
+						
+        }
+        if (res == 'move') {
+            if (flag) {
+                prevX = currX;
+                prevY = currY;
+                currX = e.clientX - canvas.offsetLeft;
+                currY = e.clientY - canvas.offsetTop;
+				updateLimit(currX,currY);
+                draw();
+            }
+        }
+    }
+	
+    </script>
+    <body  onload="pageOnLoad()">
+        <img id="img" src="" style="border:2px solid;"  onload="init()">
+		<canvas id="can" width="400" height="400" style="border:2px solid;"></canvas>
+		
+        <input type="button" value="clear" id="clr" size="23" onclick="clearAll()" >
+    </body>
+    </html>

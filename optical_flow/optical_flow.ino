@@ -22,32 +22,38 @@ void setup() {
 
   camera_setup(); // setting up and configuring the camera
  // for debugging, the camera image can be viewed online, but it will slow down the device (maybe blocking the flow calculation)
-  start_video_streaming();
+  //start_video_streaming();
   
   // setting up and configuring the flow computer, initializing it's image buffer
   camera_fb_t * fb = esp_camera_fb_get();
   // TODO: check/use fb->width (fb->height, fb->len)
   Serial.printf("fb->width: %d, fb->height: %d, fb->len: %d\n", fb->width, fb->height, fb->len); // fb->width: 128, fb->height: 160, fb->len: 20480
-  left = 0;//can be changed, the test block left
+ /*  left = 0;//can be changed, the test block left
   top = 0; //can be changed, the test block top
-  right = 128;//can be changed, the test block right
-  buttom  = 128;//can be changed, the test block buttom
+  right = 0;//can be changed, the test block right
+  buttom  = 0;//can be changed, the test block buttom */
+  
   o_width = fb->width; //the original width
   o_height = fb->height;//the original height
+ // video_streaming(fb->buf,fb->format,left,top,right,buttom,o_width,o_height);
+ Serial.println("setup flow");
   flow_setup(fb->buf,left,top,right,buttom,o_width,o_height);
+  Serial.println("clear fb");
   esp_camera_fb_return(fb); // return the buffer to the pool
-
+Serial.println("setup done");
  
 }
 
 
 void loop() {
+  //Serial.println("loop start");
   camera_fb_t * fb = esp_camera_fb_get();
   if (!fb) {
-    Serial.println("Camera capture failed");
+   // Serial.println("Camera capture failed");
     return; // ESP_FAIL;
   }
-
+   // Serial.println("stream video");
+  video_streaming(fb->buf,fb->format,left,top,right,buttom,o_width,o_height);
   int dt_us;
   float flow_rate_x, flow_rate_y;
  // int flow_quality = getFlow(fb->buf, dt_us, flow_rate_x, flow_rate_y);
@@ -67,6 +73,7 @@ void loop() {
  // Serial.printf(" dt: %6d us,\tx: %7.3f,\ty: %7.3f,\tquality: %4d,\tlidar: %" PRIu16 " \n", dt_us, speed_x, speed_y, flow_quality, ground_distance);
  if (abs(speed_x)>1 || abs(speed_y)>1){
   Serial.printf(" x: %7.3f,\ty: %7.3f,\tlidar: %" PRIu16 " \n",  speed_x, speed_y, ground_distance);
+//  Serial.printf(" left: %d,\ttop: %d,\tright: %d,\tbuttom: %d \n",left,top,right,buttom);
  }
 
 
